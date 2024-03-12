@@ -14,7 +14,7 @@ I created the database company and checked the connection.
 
 When trying to import the company.sh file I received the following error.
 ![Screenshot 2024-03-12 134151](https://github.com/biancaradulescu28/Docker_ex/assets/92685311/bd53cff2-9611-47d1-93bb-29009fef6884)
-After checking the content of the company.sh file changed the field that was giving the error from Consulting to 7 9the id of t=department Consulting in the departments table).
+After checking the content of the company.sh file I changed the field that was giving the error from Consulting to 7 (the id of department Consulting in the departments table).
 ![Screenshot 2024-03-12 134239](https://github.com/biancaradulescu28/Docker_ex/assets/92685311/60d8e0bb-4076-45db-9472-448fe4103bf9)
 ![image](https://github.com/biancaradulescu28/Docker_ex/assets/92685311/fae4d2c0-161c-4232-b4e1-75be2689d0e6)
 After this, I was able to import the file by first copying it into the container and then using the contents for the company database.

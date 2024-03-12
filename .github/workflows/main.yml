@@ -29,4 +29,6 @@ jobs:
             context: ex2
             file: ex2/Dockerfile
             push: true
-            tags: biancar26/python-app:latest2
+            tags: |
+                biancar26/python-app:latest
+                biancar26/python-app:${{ github.sha }}

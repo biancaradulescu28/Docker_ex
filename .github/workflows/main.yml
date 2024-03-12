@@ -28,5 +28,5 @@ jobs:
         with:
             context: ./ex2
             file: Dockerfile
-            push: truecd 
+            push: true
             tags: biancar26/python-app:latest

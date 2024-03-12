@@ -1,4 +1,4 @@
-#  Containerize applicaton
+#  Containerize application
 
 For this exercise I choose the app.py file.
 

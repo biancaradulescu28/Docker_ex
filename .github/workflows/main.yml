@@ -24,6 +24,9 @@ jobs:
 
       - name: Build Docker image
         run: docker build -t python-app .
+        
+      - name: Run container 
+        run: docker run python-app
 
       - name: Tag Docker image
         run: docker tag python-app biancar26/python-app:latest

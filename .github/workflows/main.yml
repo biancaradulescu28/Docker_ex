@@ -26,7 +26,7 @@ jobs:
         id: docker_build
         uses: docker/build-push-action@v2
         with:
-            context: ./ex2
-            file: Dockerfile
+            context: ex2
+            file: ex2/Dockerfile
             push: true
             tags: biancar26/python-app:latest

@@ -4,93 +4,195 @@
 
 # mv lage_file /home/john
 
-# Write a bash script that reads the passwd file, checks if the file name is “passwd”
-
 # Verify if file exists
-if [ -f "$1" ]; then #$1 first arg given to the script
-    echo -e "\nFile $1 exists."
-else
-    echo -e "\nFile $1 doesn't exist."
-fi
+verify_file() {
+    local file="$1"  # first arg of the function
 
-if [ "$(basename $1)" != "passwd" ]; then
-    echo -e "\nFile name is not passwd" #Error
-    exit 1
-else
-    echo -e "\nFile name is passwd"
-fi
+    if [ -f "$file" ]; then
+        echo -e "\nFile $file exists."
+    else
+        echo -e "\nFile $file doesn't exist."
+        exit 1
+    fi
+
+    if [ "$(basename "$file")" != "passwd" ]; then
+        echo -e "\nFile name is not passwd"
+        exit 1
+    else
+        echo -e "\nFile name is passwd"
+    fi
+}
 
 
 # 1. Print the home directory
-echo -e "\nPrint the home directory"
-awk -F: '{print $6}' $1 #print the 6th field of every line in file
-                        #fields separated by :
+print_homedir(){
+    local file="$1"
+
+    echo -e "\nPrint the home directory"
+    if output=$(awk -F: '{print $6}' "$file"); then #print the 6th field of every line in file; fields separated by :
+        echo "$output" 
+    else
+        echo "Printing the home directory failed"
+        exit 1   
+    fi
+
+}
+
+
 
 
 # 2. List all usernames from the passwd file
-echo -e "\nList all usernames from the passwd file"
-awk -F: '{print $1}' $1
+list_usernames(){
+    local file="$1"
+
+    echo -e "\nList all usernames from the passwd file"
+    if output=$(awk -F: '{print $1}' "$file"); then
+        echo "$output" 
+    else
+        echo "\nListing all usernames from the passwd file failed"
+        exit 1   
+    fi
+
+}
+
 
 # 3. Count the number of users
-echo -e "\nCount the number of users"
-awk -F: '{print $1}' $1 | wc -l #the output of awk is the input for wc counting the lines
+count_users(){
+    local file="$1"
+
+    echo -e "\nCount the number of users"
+    if output=$(awk -F: '{print $1}' "$file" | wc -l); then #the output of awk is the input for wc counting the lines
+        echo "$output" 
+    else
+        echo "\nCounting users failed"
+        exit 1   
+    fi
+
+}
+
 
 
 # 4. Find the home directory of a specific user (prompt to enter the username value)
-echo -e "\nFind the home directory of a specific user. \nInsert user:"
-read username
-awk -F: -v user="$username" '{
-    if ($1 == user) {print $6}
-}' $1
+homedir_user(){
+    local file="$1"
+
+    echo -e "\nFind the home directory of a specific user. \nInsert user:"
+    read username
+    if output=$(awk -F: -v user="$username" '{if ($1 == user) {print $6}}' "$file"); then 
+        echo "$output" 
+    else
+        echo "\nFinding the home directory of a specific user failed"
+        exit 1   
+    fi
+
+}
 
 
 # 5. List users with specific UID range (e.g. 1000-1010)
-echo -e "\nList users with specific UID range."
-echo "Insert lower_limit UID:" 
-read lower
-echo "Insert upper_limit UID:"
-read upper
-awk -F: -v lower="$lower" -v upper="$upper" '{
-    if ($3 >= lower && $3 <= upper) {print $1}
-}' $1
+UID_range(){
+    local file="$1"
+
+    echo -e "\nList users with specific UID range."
+    echo "Insert lower_limit UID:" 
+    read lower
+    echo "Insert upper_limit UID:"
+    read upper
+
+    if output=$(awk -F: -v lower="$lower" -v upper="$upper" '{if ($3 >= lower && $3 <= upper) {print $1}}' "$file"); then
+        echo "$output" 
+    else
+        echo "\nListing users with specific UID range failed"
+        exit 1   
+    fi
+
+
+}
 
 
 # 6. Find users with standard shells like /bin/bash or /bin/sh
-echo -e "\nFind users with standard shells like /bin/bash or /bin/sh"
-awk -F: '{
-    if ($7 == "/bin/bash" || $7 == "/bin/sh") {print $1}
-}' $1
+standard_shells(){
+    local file="$1"
+
+    echo -e "\nFind users with standard shells like /bin/bash or /bin/sh"
+    if output=$(awk -F: '{if ($7 == "/bin/bash" || $7 == "/bin/sh") {print $1}}' "$file"); then
+        echo "$output" 
+    else
+        echo "\nFinding users with standard shells like /bin/bash or /bin/sh failed"
+        exit 1   
+    fi
+
+
+}
 
 
 # 7. Replace the “/” character with “\” character in the entire /etc/passwd file and redirect the content to a new file
-echo -e "\nReplace the “/” character with “\” character"
-sed 's/\//\\/g' $1 > /home/new_file
+replace_char(){
+    local file="$1"
 
-echo -e"\n"
-cat new_file
+    echo -e "\nReplace the “/” character with “\” character"
+
+    if sed 's/\//\\/g' "$file" > /home/new_file; then
+        echo -e"\n"
+    cat new_file
+    else
+        echo "\nReplaceing the “/” character with “\” character failed"
+        exit 1   
+    fi
+
+}
 
 
 # 8. Print the private IP
-echo -e "\nPrint the private IP"
-private=$(hostname -I | awk '{print $1}')
-#hostname -I command gives the private IP and the output is given to awk to get the IP
-echo "$private"
+private_IP(){
+
+    echo -e "\nPrint the private IP"
+
+    if private=$(hostname -I | awk '{print $1}'); then
+        #hostname -I command gives the private IP and the output is given to awk to get the IP
+        echo "$private"
+    else
+        echo -e "\nPrinting the private IP failed"
+        exit 1
+    fi
+}
 
 # 9. Print the public IP
-echo -e "\nPrint the public IP"
-public=$(curl -s ifconfig.me)
-echo "$public"
+public_IP(){
+    echo -e "\nPrint the public IP"
+    if public=$(curl -s ifconfig.me); then
+        echo "$public"
+    else
+        echo -e "\nPrintint the public IP failed"
+        exit 1
+    fi
+}
+
 
 # 10. Switch to john user
-if su -c 'echo "Switched to user: $(whoami)" &&
-           echo -e "\nPrint the home directory" &&
+#11. Print the home directory
+switch_john_homedir(){
+    echo -e "\nSwitch to john user and print the home directory"
+    if su -c 'echo "Switched to user: $(whoami)" &&
            home=$(getent passwd $(whoami) | awk -F: "{print \$6}") &&
-           echo "$home"' john; then
-    echo "Switched to user: john"
+           echo "Home directory: $home"' john; then
+    echo "Successful"
     #task 11 in the context of the command for task 10
 
 else
     echo "Failed to switch user"
+    exit 1
 fi
+}
 
+verify_file "$1"
+print_homedir "$1"
+list_usernames "$1"
+count_users "$1"
+homedir_user "$1"
+UID_range "$1"
+standard_shells "$1"
+replace_char "$1"
+private_IP
+public_IP
+switch_john_homedir
 
